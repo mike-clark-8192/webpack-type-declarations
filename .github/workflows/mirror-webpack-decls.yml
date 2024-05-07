@@ -36,6 +36,8 @@ jobs:
 
       - name: Mirror each new tag
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           while read tag; do
             echo "Processing $tag"
             git switch -c $tag main
