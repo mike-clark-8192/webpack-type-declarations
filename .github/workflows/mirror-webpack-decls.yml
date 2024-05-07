@@ -36,12 +36,12 @@ jobs:
 
       - name: Mirror each new tag
         run: |
-          set -e
+          set -e -x
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           while read tag; do
             echo "Processing $tag"
-            git switch -c $tag main
+            git switch -q -c $tag main
             rm -rf declarations types.d.ts
             cd /tmp/webpack
             git checkout $tag
@@ -54,6 +54,5 @@ jobs:
             git push origin $tag
             git push origin $tag
           done < /tmp/tags-to-mirror.txt
-          set +e
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
