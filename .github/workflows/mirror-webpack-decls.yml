@@ -1,4 +1,4 @@
-ename: mirror-webpack-decls.yml
+name: mirror-webpack-decls.yml
 
 on:
   schedule:
