@@ -24,14 +24,14 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/webpack/webpack.git /tmp/webpack
           cd /tmp/webpack
-          git fetch --tags
+          git fetch --tags --quiet
 
       - name: Identify unmirrored tags
         run: |
           cd /tmp/webpack
-          git tag -l 'v*' | sort -rV | head -n 20 > /tmp/new-tags.txt
+          git tag -l 'v*' | sort -rV | head -n 20 | sort > /tmp/new-tags.txt
           cd $GITHUB_WORKSPACE
-          git tag -l 'v*' > /tmp/existing-tags.txt
+          git tag -l 'v*' | sort > /tmp/existing-tags.txt
           comm -23 /tmp/new-tags.txt /tmp/existing-tags.txt > /tmp/tags-to-mirror.txt
 
       - name: Mirror each new tag
