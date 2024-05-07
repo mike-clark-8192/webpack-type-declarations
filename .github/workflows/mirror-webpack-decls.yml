@@ -51,8 +51,7 @@ jobs:
             git add .
             git commit -m "Mirror $tag"
             git tag $tag
-            git push origin $tag
-            git push origin $tag
+            git push origin refs/tags/$tag
           done < /tmp/tags-to-mirror.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
