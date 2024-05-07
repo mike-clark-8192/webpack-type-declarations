@@ -15,10 +15,10 @@ jobs:
         with:
           fetch-depth: 0  # Ensures all tags and history are fetched
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'  # Use the latest LTS version of Node.js
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '18'  # Use the latest LTS version of Node.js
 
       - name: Clone webpack repository and fetch tags
         run: |
