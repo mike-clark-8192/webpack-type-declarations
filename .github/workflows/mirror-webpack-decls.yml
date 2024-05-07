@@ -1,0 +1,55 @@
+name: mirror-webpack-decls.yml
+
+on:
+  schedule:
+    - cron: '0 0,12 * * *'  # Runs at midnight and noon UTC
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensures all tags and history are fetched
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Use the latest LTS version of Node.js
+
+      - name: Clone webpack repository and fetch tags
+        run: |
+          git clone --depth 1 https://github.com/webpack/webpack.git /tmp/webpack
+          cd /tmp/webpack
+          git fetch --tags
+
+      - name: Identify unmirrored tags
+        run: |
+          cd /tmp/webpack
+          git tag -l 'v*' | sort -rV | head -n 20 > /tmp/new-tags.txt
+          cd $GITHUB_WORKSPACE
+          git tag -l 'v*' > /tmp/existing-tags.txt
+          comm -23 /tmp/new-tags.txt /tmp/existing-tags.txt > /tmp/tags-to-mirror.txt
+
+      - name: Mirror each new tag
+        run: |
+          while read tag; do
+            echo "Processing $tag"
+            git switch -c $tag main
+            rm -rf declarations types.d.ts
+            cd /tmp/webpack
+            git checkout $tag
+            cp -r declarations $GITHUB_WORKSPACE
+            cd $GITHUB_WORKSPACE
+            find declarations -name '*.d.ts' | xargs cat > types.d.ts
+            git add .
+            git commit -m "Mirror $tag"
+            git tag $tag
+            git push origin $tag
+            git push origin $tag
+          done < /tmp/tags-to-mirror.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
