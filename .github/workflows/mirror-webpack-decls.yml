@@ -1,4 +1,4 @@
-name: mirror-webpack-decls.yml
+ename: mirror-webpack-decls.yml
 
 on:
   schedule:
@@ -36,6 +36,7 @@ jobs:
 
       - name: Mirror each new tag
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           while read tag; do
@@ -53,5 +54,6 @@ jobs:
             git push origin $tag
             git push origin $tag
           done < /tmp/tags-to-mirror.txt
+          set +e
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
