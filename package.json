@@ -2,7 +2,7 @@
   "name": "webpack-type-declarations",
   "version": "999.999.999",
   "description": "Automatic mirror of [Webpack's](https://github.com/webpack/webpack) internal [type declarations](https://github.com/webpack/webpack/blob/main/declarations/).",
-  "main": "index.js",
+  "types": "./types.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
