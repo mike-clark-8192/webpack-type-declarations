@@ -29,7 +29,7 @@ jobs:
       - name: Identify unmirrored tags
         run: |
           cd /tmp/webpack
-          git tag -l 'v*' | sort -rV | head -n 20 | sort > /tmp/new-tags.txt
+          git tag -l 'v*' | sort -rV | head -n 2 | sort > /tmp/new-tags.txt
           cd $GITHUB_WORKSPACE
           git tag -l 'v*' | sort > /tmp/existing-tags.txt
           comm -23 /tmp/new-tags.txt /tmp/existing-tags.txt > /tmp/tags-to-mirror.txt
@@ -39,6 +39,7 @@ jobs:
           set -e -x
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tags=""
           while read tag; do
             echo "Processing $tag"
             git switch -q -c $tag main
@@ -48,10 +49,15 @@ jobs:
             cp -r declarations $GITHUB_WORKSPACE
             cd $GITHUB_WORKSPACE
             find declarations -name '*.d.ts' | xargs cat > types.d.ts
+            semver=${tag:1}
+            sed -i "s/999\.999\.999/$semver/" package.json
             git add .
             git commit -m "Mirror $tag"
             git tag $tag
-            git push origin refs/tags/$tag
+            tags="$tags refs/tags/$tag"
           done < /tmp/tags-to-mirror.txt
+          if [ -n "$tags" ]; then
+            git push origin $tags
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
