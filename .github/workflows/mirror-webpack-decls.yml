@@ -45,7 +45,7 @@ jobs:
             git switch -q -c $tag main
             rm -rf declarations types.d.ts
             cd /tmp/webpack
-            git checkout $tag
+            git -c advice.detachedHead=false checkout $tag
             cp -r declarations $GITHUB_WORKSPACE
             cd $GITHUB_WORKSPACE
             find declarations -name '*.d.ts' | xargs cat > types.d.ts
